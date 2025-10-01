@@ -1,6 +1,7 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Sidebar from '../components/Sidebar.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -21,13 +22,17 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
-  <body class="bg-gray-50 min-h-screen flex flex-col">
-    <Header />
+  <body class="bg-gray-50 min-h-screen">
+    <Sidebar />
 
-    <main class="flex-grow">
-      <slot />
-    </main>
+    <div class="ml-64 flex flex-col min-h-screen">
+      <Header />
 
-    <Footer />
+      <main class="flex-grow">
+        <slot />
+      </main>
+
+      <Footer />
+    </div>
   </body>
 </html>

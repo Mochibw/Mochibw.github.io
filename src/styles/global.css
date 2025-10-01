@@ -7,7 +7,8 @@
     --color-foreground: 255 255 255; /* #FFFFFF */
     --color-text-primary: 30 41 59; /* #1E293B */
     --color-text-secondary: 100 116 139; /* #64748B */
-    --color-accent: 20 184 166; /* #14B8A6 */
+    --color-accent: 20 184 166; /* #14B8A6 - 青色作为辅助色 */
+    --color-primary: 102 204 255; /* #66CCFF - 天蓝色作为主色调 */
     --color-border: 226 232 240; /* #E2E8F0 */
   }
 
