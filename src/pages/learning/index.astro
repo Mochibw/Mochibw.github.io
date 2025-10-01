@@ -1,0 +1,35 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+// 获取所有学习笔记并按日期排序
+const learning = await getCollection('learning');
+const sortedLearning = learning.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Layout title="学习 - Linatur 的知识库与思考花园">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <header class="mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4">学习</h1>
+      <p class="text-xl text-slate-600 leading-relaxed">
+        整理我在技术学习和知识探索过程中的笔记。这里记录着成长的每一步。
+      </p>
+    </header>
+
+    <main>
+      {sortedLearning.length > 0 ? (
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-1">
+          {sortedLearning.map((entry) => (
+            <ArticleCard entry={entry} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-16 text-slate-500">
+          <p class="text-lg mb-4">还没有学习笔记</p>
+          <p class="text-base">敬请期待...</p>
+        </div>
+      )}
+    </main>
+  </div>
+</Layout>

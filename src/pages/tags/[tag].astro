@@ -1,0 +1,66 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import type { CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = [...await getCollection('thoughts'), ...await getCollection('learning')];
+
+  // 获取所有唯一的标签
+  const tagSet = new Set<string>();
+  posts.forEach(post => {
+    post.data.tags?.forEach(tag => tagSet.add(tag));
+  });
+
+  // 为每个标签生成路径
+  return Array.from(tagSet).map(tag => {
+    const filteredPosts = posts.filter(post => post.data.tags?.includes(tag));
+    return {
+      params: { tag },
+      props: { posts: filteredPosts, tag }
+    };
+  });
+}
+
+type Props = {
+  posts: CollectionEntry<'thoughts' | 'learning'>[];
+  tag: string;
+};
+
+const { posts, tag } = Astro.props;
+
+// 按日期排序
+const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Layout title={`标签: ${tag} - Linatur 的知识库与思考花园`}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <header class="mb-12">
+      <div class="flex items-center gap-3 mb-6">
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-800">#{tag}</h1>
+        <span class="text-slate-500 text-lg">({sortedPosts.length} 篇文章)</span>
+      </div>
+      <p class="text-xl text-slate-600 leading-relaxed">
+        所有标记为 <span class="font-semibold text-teal-600">"{tag}"</span> 的文章
+      </p>
+    </header>
+
+    <main>
+      {sortedPosts.length > 0 ? (
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-1">
+          {sortedPosts.map((entry) => (
+            <ArticleCard entry={entry} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-16 text-slate-500">
+          <p class="text-lg mb-4">没有找到标记为 "{tag}" 的文章</p>
+          <p class="text-base">
+            <a href="/" class="text-teal-600 hover:text-teal-700">返回首页</a>
+          </p>
+        </div>
+      )}
+    </main>
+  </div>
+</Layout>

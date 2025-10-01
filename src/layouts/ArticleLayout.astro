@@ -1,0 +1,61 @@
+---
+import Layout from './Layout.astro';
+import TagPill from '../components/TagPill.astro';
+
+interface Props {
+  title: string;
+  pubDate: Date;
+  tags?: string[];
+  description?: string;
+}
+
+const { title, pubDate, tags = [], description } = Astro.props;
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+};
+---
+
+<Layout title={title}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <article class="prose prose-lg max-w-none">
+      <header class="mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-6">{title}</h1>
+
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <time class="text-slate-500" datetime={pubDate.toISOString()}>
+            {formatDate(pubDate)}
+          </time>
+
+          {tags && tags.length > 0 && (
+            <div class="flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <TagPill tag={tag} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {description && (
+          <p class="text-xl text-slate-600 leading-relaxed italic border-l-4 border-teal-500 pl-4">
+            {description}
+          </p>
+        )}
+      </header>
+
+      <div class="prose-content">
+        <slot />
+      </div>
+
+      <footer class="mt-16 pt-8 border-t border-gray-200">
+        <div id="comments" class="min-h-[100px] flex items-center justify-center text-slate-500">
+          <p>评论区功能正在开发中...</p>
+        </div>
+      </footer>
+    </article>
+  </div>
+</Layout>

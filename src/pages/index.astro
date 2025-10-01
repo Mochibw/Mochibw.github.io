@@ -1,0 +1,82 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+// 获取最新的想法和学习笔记
+const thoughts = await getCollection('thoughts');
+const learning = await getCollection('learning');
+
+// 按日期排序并取最新的3篇
+const latestThoughts = thoughts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const latestLearning = learning
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+---
+
+<Layout title="Linatur 的知识库与思考花园">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- 欢迎语 -->
+    <section class="text-center mb-16">
+      <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+        欢迎来到我的思考花园
+      </h1>
+      <p class="text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto">
+        这里是我记录想法、整理学习笔记的地方。在这里，我分享对生活的思考、对书籍的感悟，以及在技术学习路上的点点滴滴。
+      </p>
+    </section>
+
+    <!-- 最新想法 -->
+    <section class="mb-16">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-slate-800">最新想法</h2>
+        <a
+          href="/thoughts/"
+          class="text-teal-600 hover:text-teal-700 font-medium transition-colors duration-200"
+        >
+          查看全部 →
+        </a>
+      </div>
+
+      {latestThoughts.length > 0 ? (
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {latestThoughts.map((entry) => (
+            <ArticleCard entry={entry} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12 text-slate-500">
+          <p class="text-lg">还没有想法文章，敬请期待...</p>
+        </div>
+      )}
+    </section>
+
+    <!-- 最新学习笔记 -->
+    <section>
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-slate-800">最新学习</h2>
+        <a
+          href="/learning/"
+          class="text-teal-600 hover:text-teal-700 font-medium transition-colors duration-200"
+        >
+          查看全部 →
+        </a>
+      </div>
+
+      {latestLearning.length > 0 ? (
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {latestLearning.map((entry) => (
+            <ArticleCard entry={entry} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12 text-slate-500">
+          <p class="text-lg">还没有学习笔记，敬请期待...</p>
+        </div>
+      )}
+    </section>
+  </div>
+</Layout>

@@ -1,0 +1,46 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import TagPill from './TagPill.astro';
+
+interface Props {
+  entry: CollectionEntry<'thoughts' | 'learning'>;
+}
+
+const { entry } = Astro.props;
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+};
+---
+
+<article class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md hover:transform hover:translate-y-[-4px] hover:scale-[1.02] transition-all duration-300 ease-in-out">
+  <header class="mb-3">
+    <h2 class="text-xl font-bold text-slate-800 mb-2">
+      <a
+        href={`/${entry.collection}/${entry.slug}/`}
+        class="hover:text-teal-600 transition-colors duration-200"
+      >
+        {entry.data.title}
+      </a>
+    </h2>
+    <time class="text-sm text-slate-500" datetime={entry.data.pubDate.toISOString()}>
+      {formatDate(entry.data.pubDate)}
+    </time>
+  </header>
+
+  <p class="text-slate-600 mb-4 leading-relaxed">
+    {entry.data.description}
+  </p>
+
+  {entry.data.tags && entry.data.tags.length > 0 && (
+    <div class="flex flex-wrap gap-2">
+      {entry.data.tags.map((tag) => (
+        <TagPill tag={tag} />
+      ))}
+    </div>
+  )}
+</article>

@@ -1,0 +1,35 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+// 获取所有想法文章并按日期排序
+const thoughts = await getCollection('thoughts');
+const sortedThoughts = thoughts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Layout title="想法 - Linatur 的知识库与思考花园">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <header class="mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4">想法</h1>
+      <p class="text-xl text-slate-600 leading-relaxed">
+        记录我对生活、读书和世界的思考与感悟。这些文字是我内心世界的真实写照。
+      </p>
+    </header>
+
+    <main>
+      {sortedThoughts.length > 0 ? (
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-1">
+          {sortedThoughts.map((entry) => (
+            <ArticleCard entry={entry} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-16 text-slate-500">
+          <p class="text-lg mb-4">还没有想法文章</p>
+          <p class="text-base">敬请期待...</p>
+        </div>
+      )}
+    </main>
+  </div>
+</Layout>

@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/* 全局样式 */
+@layer base {
+  :root {
+    --color-background: 249 250 251; /* #F9FAFB */
+    --color-foreground: 255 255 255; /* #FFFFFF */
+    --color-text-primary: 30 41 59; /* #1E293B */
+    --color-text-secondary: 100 116 139; /* #64748B */
+    --color-accent: 20 184 166; /* #14B8A6 */
+    --color-border: 226 232 240; /* #E2E8F0 */
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Noto Sans SC', 'Lato', 'Inter', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    color: rgb(var(--color-text-primary));
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Lato', 'Inter', sans-serif;
+    font-weight: 700;
+    line-height: 1.3;
+    color: rgb(var(--color-text-primary));
+  }
+
+  h1 { @apply text-3xl md:text-4xl mb-6; }
+  h2 { @apply text-2xl md:text-3xl mb-5 mt-8; }
+  h3 { @apply text-xl md:text-2xl mb-4 mt-6; }
+  h4 { @apply text-lg md:text-xl mb-3 mt-5; }
+  h5 { @apply text-base md:text-lg mb-3 mt-4; }
+  h6 { @apply text-sm md:text-base mb-2 mt-3; }
+
+  p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  a {
+    @apply text-teal-600 hover:text-teal-700 transition-colors duration-200 underline decoration-2 underline-offset-2;
+  }
+
+  code {
+    @apply bg-gray-100 text-slate-800 px-2 py-1 rounded text-sm font-mono;
+  }
+
+  pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto mb-6;
+  }
+
+  pre code {
+    @apply bg-transparent text-gray-100 p-0;
+  }
+
+  blockquote {
+    @apply border-l-4 border-teal-500 pl-4 my-6 italic text-slate-600 bg-gray-50 py-2;
+  }
+
+  ul, ol {
+    @apply mb-4 pl-6;
+  }
+
+  li {
+    @apply mb-2;
+  }
+
+  hr {
+    @apply border-gray-300 my-8;
+  }
+
+  img {
+    @apply max-w-full h-auto rounded-lg shadow-sm my-6;
+  }
+
+  table {
+    @apply w-full border-collapse mb-6;
+  }
+
+  th, td {
+    @apply border border-gray-300 px-4 py-2 text-left;
+  }
+
+  th {
+    @apply bg-gray-50 font-semibold;
+  }
+}
