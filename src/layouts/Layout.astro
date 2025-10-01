@@ -2,6 +2,7 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Sidebar from '../components/Sidebar.astro';
+import '../styles/theme.css';
 import '../styles/global.css';
 
 interface Props {
@@ -25,11 +26,13 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
   <body class="bg-gray-50 min-h-screen">
     <Sidebar />
 
-    <div id="main-content" class="ml-0 md:ml-64 flex flex-col min-h-screen main-content-transition">
+    <div id="main-content" class="ml-0 md:ml-64 flex flex-col min-h-screen transition-all duration-300 ease-in-out">
       <Header />
 
-      <main class="flex-grow page-transition">
-        <slot />
+      <main class="flex-grow">
+        <div class="page-transition">
+          <slot />
+        </div>
       </main>
 
       <Footer />
@@ -48,7 +51,7 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
       const collapseIcon = document.getElementById('collapse-icon');
 
       // 桌面端收放功能
-      if (sidebarCollapseBtn) {
+      if (sidebarCollapseBtn && sidebar) {
         sidebarCollapseBtn.addEventListener('click', () => {
           isCollapsed = !isCollapsed;
 
@@ -56,18 +59,22 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
             sidebar.classList.add('sidebar-collapsed');
             mainContent.classList.remove('md:ml-64');
             mainContent.classList.add('md:ml-16');
-            collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>';
+            if (collapseIcon) {
+              collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>';
+            }
           } else {
             sidebar.classList.remove('sidebar-collapsed');
             mainContent.classList.remove('md:ml-16');
             mainContent.classList.add('md:ml-64');
-            collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>';
+            if (collapseIcon) {
+              collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>';
+            }
           }
         });
       }
 
       // 移动端菜单切换
-      if (sidebarToggle) {
+      if (sidebarToggle && sidebar && sidebarOverlay) {
         sidebarToggle.addEventListener('click', () => {
           isMobileMenuOpen = !isMobileMenuOpen;
 
@@ -79,10 +86,8 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
             sidebarOverlay.classList.remove('active');
           }
         });
-      }
 
-      // 点击遮罩关闭移动端菜单
-      if (sidebarOverlay) {
+        // 点击遮罩关闭移动端菜单
         sidebarOverlay.addEventListener('click', () => {
           isMobileMenuOpen = false;
           sidebar.classList.add('-translate-x-full');
@@ -92,12 +97,14 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
 
       // 响应式处理
       function handleResize() {
-        if (window.innerWidth >= 768) {
+        if (window.innerWidth >= 768 && sidebar && mainContent) {
           // 桌面端：关闭移动端菜单
           isMobileMenuOpen = false;
           sidebar.classList.remove('-translate-x-full');
-          sidebarOverlay.classList.remove('active');
-        } else {
+          if (sidebarOverlay) {
+            sidebarOverlay.classList.remove('active');
+          }
+        } else if (window.innerWidth < 768 && sidebar && mainContent) {
           // 移动端：重置桌面端收放状态
           sidebar.classList.remove('sidebar-collapsed');
           mainContent.classList.remove('md:ml-16');
@@ -106,15 +113,8 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
       }
 
       window.addEventListener('resize', handleResize);
-      handleResize(); // 初始化
-
-      // 页面切换动画
-      document.addEventListener('astro:page-load', () => {
-        mainContent.classList.add('page-transition');
-        setTimeout(() => {
-          mainContent.classList.remove('page-transition');
-        }, 300);
-      });
+      // 延迟执行初始化，确保DOM完全加载
+      setTimeout(handleResize, 100);
     </script>
   </body>
 </html>
