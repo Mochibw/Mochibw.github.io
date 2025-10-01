@@ -25,14 +25,96 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
   <body class="bg-gray-50 min-h-screen">
     <Sidebar />
 
-    <div class="ml-64 flex flex-col min-h-screen">
+    <div id="main-content" class="ml-0 md:ml-64 flex flex-col min-h-screen main-content-transition">
       <Header />
 
-      <main class="flex-grow">
+      <main class="flex-grow page-transition">
         <slot />
       </main>
 
       <Footer />
     </div>
+
+    <script>
+      // 侧边栏控制逻辑
+      let isCollapsed = false;
+      let isMobileMenuOpen = false;
+
+      const sidebar = document.getElementById('sidebar');
+      const sidebarToggle = document.getElementById('sidebar-toggle');
+      const sidebarCollapseBtn = document.getElementById('sidebar-collapse-btn');
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
+      const mainContent = document.getElementById('main-content');
+      const collapseIcon = document.getElementById('collapse-icon');
+
+      // 桌面端收放功能
+      if (sidebarCollapseBtn) {
+        sidebarCollapseBtn.addEventListener('click', () => {
+          isCollapsed = !isCollapsed;
+
+          if (isCollapsed) {
+            sidebar.classList.add('sidebar-collapsed');
+            mainContent.classList.remove('md:ml-64');
+            mainContent.classList.add('md:ml-16');
+            collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>';
+          } else {
+            sidebar.classList.remove('sidebar-collapsed');
+            mainContent.classList.remove('md:ml-16');
+            mainContent.classList.add('md:ml-64');
+            collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>';
+          }
+        });
+      }
+
+      // 移动端菜单切换
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => {
+          isMobileMenuOpen = !isMobileMenuOpen;
+
+          if (isMobileMenuOpen) {
+            sidebar.classList.remove('-translate-x-full');
+            sidebarOverlay.classList.add('active');
+          } else {
+            sidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.remove('active');
+          }
+        });
+      }
+
+      // 点击遮罩关闭移动端菜单
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', () => {
+          isMobileMenuOpen = false;
+          sidebar.classList.add('-translate-x-full');
+          sidebarOverlay.classList.remove('active');
+        });
+      }
+
+      // 响应式处理
+      function handleResize() {
+        if (window.innerWidth >= 768) {
+          // 桌面端：关闭移动端菜单
+          isMobileMenuOpen = false;
+          sidebar.classList.remove('-translate-x-full');
+          sidebarOverlay.classList.remove('active');
+        } else {
+          // 移动端：重置桌面端收放状态
+          sidebar.classList.remove('sidebar-collapsed');
+          mainContent.classList.remove('md:ml-16');
+          mainContent.classList.add('md:ml-0');
+        }
+      }
+
+      window.addEventListener('resize', handleResize);
+      handleResize(); // 初始化
+
+      // 页面切换动画
+      document.addEventListener('astro:page-load', () => {
+        mainContent.classList.add('page-transition');
+        setTimeout(() => {
+          mainContent.classList.remove('page-transition');
+        }, 300);
+      });
+    </script>
   </body>
 </html>

@@ -42,7 +42,15 @@
   }
 
   a {
-    @apply text-teal-600 hover:text-teal-700 transition-colors duration-200 underline decoration-2 underline-offset-2;
+    color: rgb(var(--color-primary));
+    transition: color 0.2s ease-in-out;
+    text-decoration-line: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+  }
+
+  a:hover {
+    color: rgb(var(--color-accent));
   }
 
   code {
@@ -58,7 +66,14 @@
   }
 
   blockquote {
-    @apply border-l-4 border-teal-500 pl-4 my-6 italic text-slate-600 bg-gray-50 py-2;
+    border-left: 4px solid rgb(var(--color-primary));
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: rgb(var(--color-text-secondary));
+    background-color: #f9fafb;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
   }
 
   ul, ol {
@@ -87,5 +102,84 @@
 
   th {
     @apply bg-gray-50 font-semibold;
+  }
+
+  /* 页面过渡效果 */
+  .page-transition {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* 侧边栏过渡效果 */
+  .sidebar-transition {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  }
+
+  .sidebar-collapsed {
+    transform: translateX(-100%);
+  }
+
+  @media (min-width: 768px) {
+    .sidebar-collapsed {
+      transform: translateX(-200px);
+    }
+  }
+
+  /* 主内容区域过渡效果 */
+  .main-content-transition {
+    transition: margin-left 0.3s ease-in-out;
+  }
+
+  /* 侧边栏切换按钮 */
+  .sidebar-toggle {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    background: white;
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .sidebar-toggle:hover {
+    background: rgb(var(--color-primary));
+    color: white;
+  }
+
+  .sidebar-shifted {
+    left: 17rem;
+  }
+
+  /* 移动端侧边栏遮罩 */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 45;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  }
+
+  .sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
   }
 }
