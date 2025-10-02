@@ -23,30 +23,25 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <script>
-      // 在页面渲染前立即应用侧边栏状态，避免闪烁
+      // 在页面渲染前设置初始状态类，避免闪烁
       (function() {
         const savedState = localStorage.getItem('sidebarCollapsed');
         if (savedState === 'true') {
-          document.documentElement.classList.add('sidebar-collapsed-state');
+          document.documentElement.classList.add('sidebar-initial-collapsed');
         }
       })();
     </script>
     <style>
-      /* 根据状态控制初始样式，避免闪烁 */
-      .sidebar-collapsed-state #sidebar {
+      /* 页面加载时的临时禁用过渡动画的类 */
+      .initial-load-no-transition {
+        transition: none !important;
+      }
+      /* 初始收起状态样式 */
+      .sidebar-initial-collapsed .sidebar-collapsed {
         transform: translateX(-200px) !important;
       }
-      .sidebar-collapsed-state #main-content {
+      .sidebar-initial-collapsed #main-content {
         margin-left: 0 !important;
-      }
-      @media (min-width: 768px) {
-        .sidebar-collapsed-state #main-content {
-          margin-left: 0 !important;
-        }
-      }
-      /* 临时禁用过渡动画的类 */
-      .no-transition {
-        transition: none !important;
       }
     </style>
   </head>
@@ -88,41 +83,47 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
         }
       }
 
-      // 从 localStorage 读取侧边栏状态并立即应用（避免动画）
+      // 从 localStorage 读取侧边栏状态并立即应用（避免初始加载时的动画）
       function loadSidebarState() {
         const savedState = localStorage.getItem('sidebarCollapsed');
-        
-        // 添加临时类禁用过渡动画
-        sidebar?.classList.add('no-transition');
-        mainContent?.classList.add('no-transition');
-        if (sidebarCollapseBtn) {
-          sidebarCollapseBtn.classList.add('no-transition');
-        }
-        
+
+        // 只在初始加载时禁用过渡动画
+        sidebar?.classList.add('initial-load-no-transition');
+        mainContent?.classList.add('initial-load-no-transition');
+
         if (savedState === 'true' && sidebar && mainContent && collapseIcon) {
+          // 收起状态
           isCollapsed = true;
           sidebar.classList.add('sidebar-collapsed');
           mainContent.classList.remove('md:ml-64');
           mainContent.classList.add('md:ml-0');
           collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>';
+        } else {
+          // 展开状态
+          isCollapsed = false;
+          sidebar.classList.remove('sidebar-collapsed');
+          mainContent.classList.remove('md:ml-0');
+          mainContent.classList.add('md:ml-64');
+          if (collapseIcon) {
+            collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>';
+          }
         }
-        
+
         // 更新按钮位置
         updateButtonPosition();
-        
+
         // 恢复侧边栏滚动位置
         const savedScrollPos = sessionStorage.getItem('sidebarScrollPos');
         if (savedScrollPos && sidebar) {
           sidebar.scrollTop = parseInt(savedScrollPos);
         }
-        
+
         // 100ms后移除临时类，恢复过渡动画
         setTimeout(() => {
-          sidebar?.classList.remove('no-transition');
-          mainContent?.classList.remove('no-transition');
-          if (sidebarCollapseBtn) {
-            sidebarCollapseBtn.classList.remove('no-transition');
-          }
+          sidebar?.classList.remove('initial-load-no-transition');
+          mainContent?.classList.remove('initial-load-no-transition');
+          // 移除初始状态类，避免影响后续的动态切换
+          document.documentElement.classList.remove('sidebar-initial-collapsed');
         }, 100);
       }
 
@@ -140,7 +141,7 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
       if (sidebarCollapseBtn && sidebar) {
         sidebarCollapseBtn.addEventListener('click', () => {
           isCollapsed = !isCollapsed;
-          
+
           // 保存状态到 localStorage
           localStorage.setItem('sidebarCollapsed', isCollapsed.toString());
 
@@ -159,7 +160,7 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
               collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>';
             }
           }
-          
+
           // 更新按钮位置
           updateButtonPosition();
         });
@@ -199,7 +200,7 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
         } else if (window.innerWidth < 768 && sidebar && mainContent) {
           // 移动端：重置桌面端收放状态
           sidebar.classList.remove('sidebar-collapsed');
-          mainContent.classList.remove('md:ml-16');
+          mainContent.classList.remove('md:ml-64');
           mainContent.classList.add('md:ml-0');
         }
       }
@@ -208,17 +209,24 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
       // 延迟执行初始化，确保DOM完全加载
       setTimeout(handleResize, 100);
 
+      // 页面卸载前保存状态
+      window.addEventListener('beforeunload', () => {
+        if (sidebar) {
+          sessionStorage.setItem('sidebarScrollPos', sidebar.scrollTop.toString());
+        }
+      });
+
       // 阻止点击当前页面链接导致的页面重载和闪烁
       function preventCurrentPageReload() {
         const currentPath = window.location.pathname;
         const links = document.querySelectorAll('a[href]');
-        
+
         links.forEach(link => {
           const href = link.getAttribute('href');
           if (href) {
             // 获取链接的完整路径
             const linkPath = new URL(href, window.location.origin).pathname;
-            
+
             // 如果链接指向当前页面，阻止默认行为
             if (linkPath === currentPath) {
               link.addEventListener('click', (e) => {
