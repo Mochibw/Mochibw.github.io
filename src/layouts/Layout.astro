@@ -22,14 +22,41 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <script>
+      // 在页面渲染前立即应用侧边栏状态，避免闪烁
+      (function() {
+        const savedState = localStorage.getItem('sidebarCollapsed');
+        if (savedState === 'true') {
+          document.documentElement.classList.add('sidebar-collapsed-state');
+        }
+      })();
+    </script>
+    <style>
+      /* 根据状态控制初始样式，避免闪烁 */
+      .sidebar-collapsed-state #sidebar {
+        transform: translateX(-200px) !important;
+      }
+      .sidebar-collapsed-state #main-content {
+        margin-left: 0 !important;
+      }
+      @media (min-width: 768px) {
+        .sidebar-collapsed-state #main-content {
+          margin-left: 0 !important;
+        }
+      }
+      /* 临时禁用过渡动画的类 */
+      .no-transition {
+        transition: none !important;
+      }
+    </style>
   </head>
-  <body class="bg-gray-50 min-h-screen">
+  <body class="bg-gray-50 min-h-screen flex flex-col">
     <Sidebar />
 
-    <div id="main-content" class="ml-0 md:ml-64 flex flex-col min-h-screen transition-all duration-300 ease-in-out">
+    <div id="main-content" class="ml-0 md:ml-64 transition-all duration-300 ease-in-out flex flex-col min-h-screen">
       <Header />
 
-      <main class="flex-grow">
+      <main class="flex-1 overflow-y-auto pb-8">
         <div class="page-transition">
           <slot />
         </div>
@@ -50,26 +77,91 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
       const mainContent = document.getElementById('main-content');
       const collapseIcon = document.getElementById('collapse-icon');
 
+      // 更新按钮位置
+      function updateButtonPosition() {
+        if (sidebarCollapseBtn) {
+          if (isCollapsed) {
+            sidebarCollapseBtn.style.left = '1rem';
+          } else {
+            sidebarCollapseBtn.style.left = '244px';
+          }
+        }
+      }
+
+      // 从 localStorage 读取侧边栏状态并立即应用（避免动画）
+      function loadSidebarState() {
+        const savedState = localStorage.getItem('sidebarCollapsed');
+        
+        // 添加临时类禁用过渡动画
+        sidebar?.classList.add('no-transition');
+        mainContent?.classList.add('no-transition');
+        if (sidebarCollapseBtn) {
+          sidebarCollapseBtn.classList.add('no-transition');
+        }
+        
+        if (savedState === 'true' && sidebar && mainContent && collapseIcon) {
+          isCollapsed = true;
+          sidebar.classList.add('sidebar-collapsed');
+          mainContent.classList.remove('md:ml-64');
+          mainContent.classList.add('md:ml-0');
+          collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>';
+        }
+        
+        // 更新按钮位置
+        updateButtonPosition();
+        
+        // 恢复侧边栏滚动位置
+        const savedScrollPos = sessionStorage.getItem('sidebarScrollPos');
+        if (savedScrollPos && sidebar) {
+          sidebar.scrollTop = parseInt(savedScrollPos);
+        }
+        
+        // 100ms后移除临时类，恢复过渡动画
+        setTimeout(() => {
+          sidebar?.classList.remove('no-transition');
+          mainContent?.classList.remove('no-transition');
+          if (sidebarCollapseBtn) {
+            sidebarCollapseBtn.classList.remove('no-transition');
+          }
+        }, 100);
+      }
+
+      // 页面加载时应用保存的状态
+      loadSidebarState();
+
+      // 保存侧边栏滚动位置
+      if (sidebar) {
+        sidebar.addEventListener('scroll', () => {
+          sessionStorage.setItem('sidebarScrollPos', sidebar.scrollTop.toString());
+        });
+      }
+
       // 桌面端收放功能
       if (sidebarCollapseBtn && sidebar) {
         sidebarCollapseBtn.addEventListener('click', () => {
           isCollapsed = !isCollapsed;
+          
+          // 保存状态到 localStorage
+          localStorage.setItem('sidebarCollapsed', isCollapsed.toString());
 
           if (isCollapsed) {
             sidebar.classList.add('sidebar-collapsed');
             mainContent.classList.remove('md:ml-64');
-            mainContent.classList.add('md:ml-16');
+            mainContent.classList.add('md:ml-0');
             if (collapseIcon) {
-              collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>';
+              collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>';
             }
           } else {
             sidebar.classList.remove('sidebar-collapsed');
-            mainContent.classList.remove('md:ml-16');
+            mainContent.classList.remove('md:ml-0');
             mainContent.classList.add('md:ml-64');
             if (collapseIcon) {
-              collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>';
+              collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>';
             }
           }
+          
+          // 更新按钮位置
+          updateButtonPosition();
         });
       }
 
@@ -115,6 +207,30 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
       window.addEventListener('resize', handleResize);
       // 延迟执行初始化，确保DOM完全加载
       setTimeout(handleResize, 100);
+
+      // 阻止点击当前页面链接导致的页面重载和闪烁
+      function preventCurrentPageReload() {
+        const currentPath = window.location.pathname;
+        const links = document.querySelectorAll('a[href]');
+        
+        links.forEach(link => {
+          const href = link.getAttribute('href');
+          if (href) {
+            // 获取链接的完整路径
+            const linkPath = new URL(href, window.location.origin).pathname;
+            
+            // 如果链接指向当前页面，阻止默认行为
+            if (linkPath === currentPath) {
+              link.addEventListener('click', (e) => {
+                e.preventDefault();
+              });
+            }
+          }
+        });
+      }
+
+      // 页面加载完成后执行
+      preventCurrentPageReload();
     </script>
   </body>
 </html>

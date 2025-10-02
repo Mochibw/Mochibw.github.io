@@ -8,9 +8,10 @@ const { tag, href } = Astro.props;
 const tagHref = href || `/tags/${tag}/`;
 ---
 
+<!-- 方案4: 线条样式 (只有边框和文字) -->
 <a
   href={tagHref}
-  class="inline-block px-3 py-1 text-sm bg-primary text-white rounded-full hover:bg-primary-hover transition-all duration-200 transform hover:scale-105"
+  class="inline-block px-3 py-1 text-sm font-semibold bg-transparent text-[var(--color-text-link)] border-2 border-[var(--color-text-link)] rounded-full hover:bg-[var(--color-neutral-50)] hover:text-[var(--color-text-link-hover)] hover:border-[var(--color-text-link-hover)] transition-all duration-200"
 >
   {tag}
 </a>

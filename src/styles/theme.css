@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #66ccff;
-  --color-primary-hover: #5ab8e6;
-  --color-accent: #14b8a6;
-  --color-accent-hover: #0d9488;
+    /* 主题色系 - 明亮青色（无文字部分） */
+    --color-primary: #26c6da;
+    --color-primary-hover: #00bcd4;
+
+    /* 文字链接色系 - 深青色（有文字部分） */
+    --color-text-link: #00838f;
+    --color-text-link-hover: #006064;
+
+    /* 强调色系 - 中青色 */
+    --color-accent: #00acc1;
+    --color-accent-hover: #0097a7;
+
+    /* 中性色系 */
+    --color-neutral-50: #f8fafc;
+    --color-neutral-100: #f1f5f9;
 }
