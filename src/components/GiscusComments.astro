@@ -1,0 +1,110 @@
+---
+// Giscus 评论组件
+// 使用 GitHub Discussions 作为评论系统
+---
+
+<div id="comments" class="giscus-container mt-12" style="background: transparent;">
+  <!-- 方案 1.3 改：叶子装饰符 - 自然、优雅的视觉语言 -->
+  <div class="relative flex items-center my-12">
+    <div class="flex-grow border-t border-slate-200"></div>
+    <div class="mx-4 text-slate-400 flex items-center">
+      <!-- 叶子 SVG 图标 -->
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+        <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z" />
+      </svg>
+    </div>
+    <div class="flex-grow border-t border-slate-200"></div>
+  </div>
+
+  <div class="mb-6">
+    <h3 class="text-xl font-semibold text-slate-800 mb-2">评论区</h3>
+    <p class="text-sm text-slate-600">
+      欢迎在下方留言讨论，支持 GitHub 账号登录
+    </p>
+  </div>
+
+  <!-- Giscus 评论组件 -->
+  <script src="https://giscus.app/client.js"
+          data-repo="Mochibw/Mochibw.github.io"
+          data-repo-id="R_kgDOP6Tspw"
+          data-category="Comments"
+          data-category-id="DIC_kwDOP6Tsp84CwdWV"
+          data-mapping="pathname"
+          data-strict="0"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="top"
+          data-theme="preferred_color_scheme"
+          data-lang="zh-CN"
+          data-loading="lazy"
+          crossorigin="anonymous"
+          async>
+  </script>
+
+  <!-- 加载状态提示 -->
+  <noscript>
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+      <p class="text-yellow-800">
+        请启用 JavaScript 以查看评论功能
+      </p>
+    </div>
+  </noscript>
+</div>
+
+<style>
+  /* Giscus 评论组件样式优化 */
+  .giscus-container {
+    border-radius: 8px;
+    background: transparent; /* 改为透明背景，与文章背景融合 */
+  }
+
+  /* 确保评论区在移动端的响应式显示 */
+  @media (max-width: 768px) {
+    .giscus-container {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+
+  /* 自定义 Giscus 主题色彩以匹配网站主题 */
+  :global(.giscus-frame) {
+    border-radius: 8px;
+    border: none;
+    background: transparent; /* 确保 Giscus iframe 背景透明 */
+  }
+
+  /* 确保评论区内部元素的背景与文章融合 */
+  :global(.giscus-container) {
+    background: transparent !important;
+  }
+
+  /* 针对 Giscus 内部元素的背景色调整 */
+  :global(.giscus) {
+    background: transparent !important;
+  }
+
+  /* 移除可能存在的分割线或边框 */
+  :global(.giscus .giscus-header),
+  :global(.giscus .giscus-comments) {
+    border: none !important;
+    background: transparent !important;
+  }
+
+  /* 加载动画 */
+  .giscus-container:has(script[loading="lazy"])::after {
+    content: "";
+    display: block;
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--color-neutral-100);
+    border-top: 3px solid var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>

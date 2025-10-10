@@ -1,6 +1,7 @@
 ---
 import Layout from './Layout.astro';
 import TagPill from '../components/TagPill.astro';
+import GiscusComments from '../components/GiscusComments.astro';
 
 interface Props {
   title: string;
@@ -51,11 +52,7 @@ const formatDate = (date: Date) => {
         <slot />
       </div>
 
-      <footer class="mt-16 pt-8 border-t border-gray-200">
-        <div id="comments" class="min-h-[100px] flex items-center justify-center text-slate-500">
-          <p>评论区功能正在开发中...</p>
-        </div>
-      </footer>
+      <GiscusComments />
     </article>
   </div>
 </Layout>
