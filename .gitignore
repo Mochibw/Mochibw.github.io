@@ -1,24 +1,35 @@
-# build output
+# Generated website and extension builds (at any depth)
 dist/
-# generated types
-.astro/
+/.astro/
+*.tsbuildinfo
 
-# dependencies
+# Installed dependencies (website and local VS Code extension)
 node_modules/
 
-# logs
+# Logs and test output
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+.vscode-test/
+coverage/
 
-
-# environment variables
+# Local environment values; keep shareable examples
 .env
-.env.production
+.env.*
+!.env.example
+!.env.*.example
 
-# macOS-specific files
+# OS and personal IDE files
 .DS_Store
-
-# jetbrains setting folder
+Thumbs.db
+Desktop.ini
 .idea/
+
+# Derived article-tag index; shared .vscode configs remain tracked
+/.vscode/article-tags.json
+/.vscode/article-tags.json.tmp
+
+# Locally packaged extension; keep its source, tests, docs and lockfile
+/tools/article-tags-vscode/*.vsix

@@ -1,0 +1,38 @@
+{
+  "name": "article-tags",
+  "displayName": "文章标签补全",
+  "description": "根据 src/content 中已保存文章的实际标签，提供 frontmatter 补全并同步标签索引。",
+  "version": "0.1.0",
+  "publisher": "mochibw-local",
+  "private": true,
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mochibw/Mochibw.github.io.git",
+    "directory": "tools/article-tags-vscode"
+  },
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "extensionKind": ["workspace"],
+  "activationEvents": ["workspaceContains:src/content"],
+  "main": "./dist/extension.cjs",
+  "capabilities": {
+    "untrustedWorkspaces": { "supported": false },
+    "virtualWorkspaces": { "supported": false }
+  },
+  "contributes": {
+    "commands": [
+      { "command": "articleTags.rebuild", "title": "文章标签：重建索引" },
+      { "command": "articleTags.openIndex", "title": "文章标签：查看标签索引" }
+    ]
+  },
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "test": "node --test test/*.test.cjs",
+    "test:host": "node scripts/test-host.cjs",
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package --allow-missing-repository --skip-license --out article-tags-0.1.0.vsix"
+  },
+  "dependencies": { "yaml": "^2.8.1" },
+  "devDependencies": { "@vscode/vsce": "^3.6.2", "esbuild": "^0.25.10" }
+}
