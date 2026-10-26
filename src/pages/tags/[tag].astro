@@ -37,7 +37,7 @@ const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDa
 <Layout title={`标签: ${tag} - Linatur 的知识库与思考花园`}>
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <header class="mb-12">
-      <div class="flex items-center gap-3 mb-6">
+      <div class="flex flex-wrap items-center gap-3 mb-6">
         <h1 class="text-3xl md:text-4xl font-bold text-slate-800">#{tag}</h1>
         <span class="text-slate-500 text-lg">({sortedPosts.length} 篇文章)</span>
       </div>
@@ -46,9 +46,9 @@ const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDa
       </p>
     </header>
 
-    <main>
+    <div>
       {sortedPosts.length > 0 ? (
-        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-1">
+        <div class="divide-y divide-slate-200/80">
           {sortedPosts.map((entry) => (
             <ArticleCard entry={entry} />
           ))}
@@ -61,6 +61,6 @@ const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDa
           </p>
         </div>
       )}
-    </main>
+    </div>
   </div>
 </Layout>

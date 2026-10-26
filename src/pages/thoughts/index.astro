@@ -17,9 +17,9 @@ const sortedThoughts = thoughts.sort((a, b) => b.data.pubDate.valueOf() - a.data
       </p>
     </header>
 
-    <main>
+    <div>
       {sortedThoughts.length > 0 ? (
-        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-1">
+        <div class="divide-y divide-slate-200/80">
           {sortedThoughts.map((entry) => (
             <ArticleCard entry={entry} />
           ))}
@@ -30,6 +30,6 @@ const sortedThoughts = thoughts.sort((a, b) => b.data.pubDate.valueOf() - a.data
           <p class="text-base">敬请期待...</p>
         </div>
       )}
-    </main>
+    </div>
   </div>
 </Layout>

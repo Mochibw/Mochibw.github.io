@@ -1,11 +1,17 @@
 ---
-// Header.astro
+const path = Astro.url.pathname;
+const section = path.startsWith('/thoughts') ? '想法'
+  : path.startsWith('/learning') ? '学习'
+  : path.startsWith('/tags') ? '标签'
+  : path.startsWith('/about') ? '关于我'
+  : '知识库与思考花园';
 ---
 <header class="sticky top-0 z-40 bg-white border-b border-gray-200">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <nav class="flex justify-between items-center h-16" aria-label="顶部导航">
       <div class="flex-shrink-0">
-        <a href="/" class="text-xl font-bold text-slate-800 hover:text-[var(--color-primary)] transition-colors duration-200">
+        <a href="/" class="inline-flex items-center gap-2.5 text-xl font-semibold text-slate-800 hover:text-[var(--color-text-link)] transition-colors duration-200" aria-label="Linatur，返回首页">
+          <img src="/favicon.svg" width="26" height="26" alt="" aria-hidden="true" />
           Linatur
         </a>
       </div>
@@ -21,32 +27,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-      <div class="hidden md:flex space-x-8">
-        <a
-          href="/"
-          class="text-slate-600 hover:text-[var(--color-primary)] transition-colors duration-200 font-medium"
-        >
-          首页
-        </a>
-        <a
-          href="/thoughts/"
-          class="text-slate-600 hover:text-[var(--color-primary)] transition-colors duration-200 font-medium"
-        >
-          想法
-        </a>
-        <a
-          href="/learning/"
-          class="text-slate-600 hover:text-[var(--color-primary)] transition-colors duration-200 font-medium"
-        >
-          学习
-        </a>
-        <a
-          href="/about/"
-          class="text-slate-600 hover:text-[var(--color-primary)] transition-colors duration-200 font-medium"
-        >
-          关于我
-        </a>
-      </div>
+      <p class="hidden text-sm text-slate-500 md:block" aria-label="当前栏目">{section}</p>
     </nav>
   </div>
 </header>

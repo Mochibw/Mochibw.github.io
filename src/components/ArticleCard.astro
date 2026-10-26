@@ -4,9 +4,11 @@ import TagPill from './TagPill.astro';
 
 interface Props {
   entry: CollectionEntry<'thoughts' | 'learning'>;
+  headingLevel?: 'h2' | 'h3';
 }
 
-const { entry } = Astro.props;
+const { entry, headingLevel = 'h2' } = Astro.props;
+const Heading = headingLevel;
 
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat('zh-CN', {
@@ -17,30 +19,28 @@ const formatDate = (date: Date) => {
 };
 ---
 
-<article class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md hover:transform hover:translate-y-[-4px] hover:scale-[1.02] transition-all duration-300 ease-in-out">
-  <header class="mb-3">
-    <h2 class="text-xl font-bold text-slate-800 mb-2">
+<article class="article-entry grid min-w-0 gap-2 py-6 first:pt-0 last:pb-0 sm:grid-cols-[7.5rem_minmax(0,1fr)] sm:gap-6">
+  <time class="text-xs text-slate-500 leading-7 sm:text-sm" datetime={entry.data.pubDate.toISOString()}>
+    {formatDate(entry.data.pubDate)}
+  </time>
+  <div class="min-w-0 [overflow-wrap:anywhere]">
+    <Heading class="text-xl font-semibold text-slate-800 leading-snug">
       <a
         href={`/${entry.collection}/${entry.slug}/`}
-        class="hover:text-[var(--color-text-link-hover)] transition-colors duration-200"
+        class="hover:text-[var(--color-text-link)] hover:underline underline-offset-4 transition-colors duration-200"
       >
         {entry.data.title}
       </a>
-    </h2>
-    <time class="text-sm text-slate-500" datetime={entry.data.pubDate.toISOString()}>
-      {formatDate(entry.data.pubDate)}
-    </time>
-  </header>
-
-  <p class="text-slate-600 mb-4 leading-relaxed">
-    {entry.data.description}
-  </p>
-
-  {entry.data.tags && entry.data.tags.length > 0 && (
-    <div class="flex flex-wrap gap-2">
-      {entry.data.tags.map((tag) => (
-        <TagPill tag={tag} />
-      ))}
-    </div>
-  )}
+    </Heading>
+    <p class="mt-2 text-sm text-slate-600 leading-relaxed sm:text-base">
+      {entry.data.description}
+    </p>
+    {entry.data.tags && entry.data.tags.length > 0 && (
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        {entry.data.tags.map((tag) => (
+          <TagPill tag={tag} />
+        ))}
+      </div>
+    )}
+  </div>
 </article>

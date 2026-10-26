@@ -18,65 +18,67 @@ const latestLearning = learning
 ---
 
 <Layout title="Linatur 的知识库与思考花园">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- 欢迎语 -->
-    <section class="text-center mb-16">
-      <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
-        欢迎来到我的思考花园
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+    <section class="mb-12">
+      <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+        Linatur 的思考花园
       </h1>
-      <p class="text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto">
-        这里是我记录想法、整理学习笔记的地方。在这里，我分享对生活的思考、对书籍的感悟，以及在技术学习路上的点点滴滴。
+      <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
+        在这里记录对生活的思考、读书的感悟，以及学习路上的点滴。
       </p>
     </section>
 
-    <!-- 最新想法 -->
-    <section class="mb-16">
-      <div class="flex justify-between items-center mb-8">
-        <h2 class="text-3xl font-bold text-slate-800">想法</h2>
+    <section class="mb-12" aria-labelledby="thoughts-heading">
+      <div class="flex justify-between items-center gap-4 mb-6">
+        <h2 id="thoughts-heading" class="text-2xl font-semibold text-slate-800">想法</h2>
         <a
           href="/thoughts/"
-          class="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium transition-colors duration-200"
+          class="shrink-0 text-sm text-[var(--color-text-link)] hover:text-[var(--color-text-link-hover)] transition-colors duration-200"
+          aria-label="查看全部想法"
         >
           查看全部 →
         </a>
       </div>
 
       {latestThoughts.length > 0 ? (
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div class="divide-y divide-slate-200/80">
           {latestThoughts.map((entry) => (
-            <ArticleCard entry={entry} />
+            <ArticleCard entry={entry} headingLevel="h3" />
           ))}
         </div>
       ) : (
-        <div class="text-center py-12 text-slate-500">
-          <p class="text-lg">还没有想法文章，敬请期待...</p>
-        </div>
+        <p class="text-sm text-slate-500">还没有想法文章，敬请期待...</p>
       )}
     </section>
 
-    <!-- 最新学习笔记 -->
-    <section>
-      <div class="flex justify-between items-center mb-8">
-        <h2 class="text-3xl font-bold text-slate-800">学习</h2>
-        <a
-          href="/learning/"
-          class="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium transition-colors duration-200"
-        >
-          查看全部 →
-        </a>
-      </div>
-
-      {latestLearning.length > 0 ? (
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    {latestLearning.length > 0 ? (
+      <section aria-labelledby="learning-heading">
+        <div class="flex justify-between items-center gap-4 mb-6">
+          <h2 id="learning-heading" class="text-2xl font-semibold text-slate-800">学习</h2>
+          <a
+            href="/learning/"
+            class="shrink-0 text-sm text-[var(--color-text-link)] hover:text-[var(--color-text-link-hover)] transition-colors duration-200"
+            aria-label="查看全部学习笔记"
+          >
+            查看全部 →
+          </a>
+        </div>
+        <div class="divide-y divide-slate-200/80">
           {latestLearning.map((entry) => (
-            <ArticleCard entry={entry} />
+            <ArticleCard entry={entry} headingLevel="h3" />
           ))}
         </div>
-      ) : (
-        <div class="text-center py-12 text-slate-500">
-          <p class="text-lg">还没有学习笔记，敬请期待...</p>
+      </section>
+    ) : (
+      <section class="flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:items-center sm:justify-between" aria-labelledby="learning-heading">
+        <div>
+          <h2 id="learning-heading" class="text-base font-semibold text-slate-700">学习</h2>
+          <p class="mt-1 text-sm text-slate-500">笔记整理中，写好就放在这里。</p>
         </div>
-      )}
-    </section>
+        <a href="/learning/" class="shrink-0 text-sm text-[var(--color-text-link)] hover:text-[var(--color-text-link-hover)] transition-colors duration-200">
+          查看栏目 →
+        </a>
+      </section>
+    )}
   </div>
 </Layout>
