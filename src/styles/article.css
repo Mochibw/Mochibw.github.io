@@ -1,0 +1,166 @@
+@layer components {
+    /* 784px overall, with a 720px text column on wider screens. */
+    .reading-container {
+        width: 100%;
+        max-width: 49rem;
+        margin-inline: auto;
+        padding: 2.5rem 1.25rem 3rem;
+    }
+
+    .article-summary {
+        margin-top: 1.5rem;
+        border-inline-start: 2px solid var(--color-primary);
+        padding-inline-start: 1rem;
+        color: #64748b;
+        font-size: 1.0625rem;
+        line-height: 1.85;
+        overflow-wrap: anywhere;
+    }
+
+    /* This scope contains article/about content, never navigation or comments. */
+    .article-body {
+        color: #334155;
+        font-size: 1.0625rem;
+        line-height: 1.85;
+        overflow-wrap: anywhere;
+    }
+
+    .article-body :where(h1, h2, h3, h4, h5, h6) {
+        margin-block: 2.25rem 0.875rem;
+        color: #1e293b;
+        font-weight: 700;
+        line-height: 1.5;
+        scroll-margin-top: 6rem;
+    }
+
+    .article-body :where(h1) { font-size: 1.75rem; }
+    .article-body :where(h2) { font-size: 1.5rem; }
+    .article-body :where(h3) { font-size: 1.25rem; }
+    .article-body :where(h4) { font-size: 1.125rem; }
+    .article-body :where(h5, h6) { font-size: 1rem; }
+
+    .article-body :where(p) {
+        margin-block: 0 1.25rem;
+    }
+
+    .article-body :where(a) {
+        color: var(--color-text-link);
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+        transition: color 0.2s ease-in-out;
+    }
+
+    .article-body :where(a:hover) {
+        color: var(--color-text-link-hover);
+    }
+
+    .article-body :where(strong) {
+        color: #1e293b;
+        font-weight: 700;
+    }
+
+    .article-body :where(ul, ol) {
+        margin-block: 0 1.25rem;
+        padding-inline-start: 1.5rem;
+    }
+
+    .article-body :where(ul) { list-style-type: disc; }
+    .article-body :where(ol) { list-style-type: decimal; }
+    .article-body :where(li) { margin-block: 0.35rem; }
+    .article-body :where(li > ul, li > ol) { margin-block: 0.5rem; }
+    .article-body :where(li > p) { margin-bottom: 0.5rem; }
+
+    .article-body :where(blockquote) {
+        margin-block: 1.75rem;
+        border-inline-start: 3px solid var(--color-primary);
+        border-radius: 0 0.5rem 0.5rem 0;
+        padding: 0.875rem 1.125rem;
+        background: var(--color-neutral-100);
+        color: #475569;
+    }
+
+    .article-body :where(blockquote > :last-child) {
+        margin-bottom: 0;
+    }
+
+    .article-body :where(code) {
+        border-radius: 0.25rem;
+        padding: 0.15rem 0.35rem;
+        background: #e2e8f0;
+        font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+        font-size: 0.875em;
+    }
+
+    .article-body :where(pre) {
+        max-width: 100%;
+        margin-block: 1.5rem;
+        overflow-x: auto;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 1rem 1.25rem;
+        background: var(--color-neutral-100);
+        font-size: 0.875rem;
+        line-height: 1.7;
+        tab-size: 2;
+    }
+
+    .article-body :where(pre code) {
+        border-radius: 0;
+        padding: 0;
+        background: transparent;
+        font-size: inherit;
+        white-space: pre;
+        overflow-wrap: normal;
+    }
+
+    .article-body :where(img) {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 1.75rem auto;
+        border-radius: 0.75rem;
+    }
+
+    .article-body :where(table) {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        margin-block: 1.5rem;
+        overflow-x: auto;
+        border-collapse: collapse;
+        font-size: 0.9375rem;
+    }
+
+    .article-body :where(th, td) {
+        border: 1px solid #e2e8f0;
+        padding: 0.625rem 0.875rem;
+        text-align: start;
+        vertical-align: top;
+    }
+
+    .article-body :where(th) {
+        background: var(--color-neutral-100);
+        font-weight: 600;
+    }
+
+    .article-body :where(hr) {
+        margin-block: 2rem;
+        border-top: 1px solid #cbd5e1;
+    }
+
+    .article-body > :first-child,
+    .article-body > section > :first-child {
+        margin-top: 0;
+    }
+
+    .article-body > :last-child {
+        margin-bottom: 0;
+    }
+
+    @media (min-width: 640px) {
+        .reading-container {
+            padding: 3rem 2rem 4rem;
+        }
+    }
+}

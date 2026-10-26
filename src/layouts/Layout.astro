@@ -2,7 +2,6 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Sidebar from '../components/Sidebar.astro';
-import '../styles/theme.css';
 import '../styles/global.css';
 
 interface Props {
@@ -22,7 +21,7 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-    <script>
+    <script is:inline>
       // 在页面渲染前设置初始状态类，避免闪烁
       (function() {
         const savedState = localStorage.getItem('sidebarCollapsed');
@@ -31,24 +30,26 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
         }
       })();
     </script>
-    <style>
+    <style is:global>
       /* 页面加载时的临时禁用过渡动画的类 */
       .initial-load-no-transition {
         transition: none !important;
       }
       /* 初始收起状态样式 */
-      .sidebar-initial-collapsed .sidebar-collapsed {
-        transform: translateX(-200px) !important;
-      }
-      .sidebar-initial-collapsed #main-content {
-        margin-left: 0 !important;
+      @media (min-width: 768px) {
+        .sidebar-initial-collapsed #sidebar {
+          transform: translateX(-200px) !important;
+        }
+        .sidebar-initial-collapsed #main-content {
+          margin-left: 0 !important;
+        }
       }
     </style>
   </head>
   <body class="bg-gray-50 min-h-screen flex flex-col">
     <Sidebar />
 
-    <div id="main-content" class="ml-0 md:ml-64 transition-all duration-300 ease-in-out flex flex-col min-h-screen">
+    <div id="main-content" class="ml-0 md:ml-64 min-w-0 transition-all duration-300 ease-in-out flex flex-col min-h-screen">
       <Header />
 
       <main class="flex-1 overflow-y-auto pb-8">
@@ -67,6 +68,7 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
 
       const sidebar = document.getElementById('sidebar');
       const sidebarToggle = document.getElementById('sidebar-toggle');
+      const sidebarClose = document.getElementById('sidebar-close');
       const sidebarCollapseBtn = document.getElementById('sidebar-collapse-btn');
       const sidebarOverlay = document.getElementById('sidebar-overlay');
       const mainContent = document.getElementById('main-content');
@@ -141,6 +143,7 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
       if (sidebarCollapseBtn && sidebar) {
         sidebarCollapseBtn.addEventListener('click', () => {
           isCollapsed = !isCollapsed;
+          sidebar.inert = isCollapsed;
 
           // 保存状态到 localStorage
           localStorage.setItem('sidebarCollapsed', isCollapsed.toString());
@@ -167,24 +170,61 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
       }
 
       // 移动端菜单切换
+      function setMobileMenuOpen(open: boolean, restoreFocus = false) {
+        if (!sidebar || !mainContent) return;
+        isMobileMenuOpen = open;
+        sidebar.classList.toggle('-translate-x-full', !open);
+        sidebarOverlay?.classList.toggle('active', open);
+        sidebarToggle?.setAttribute('aria-expanded', String(open));
+        document.body.classList.toggle('mobile-menu-open', open);
+        mainContent.inert = open;
+        sidebar.inert = window.innerWidth < 768 && !open;
+
+        if (open) {
+          (sidebarClose || sidebar).focus({ preventScroll: true });
+        } else if (restoreFocus) {
+          sidebarToggle?.focus({ preventScroll: true });
+        }
+      }
+
       if (sidebarToggle && sidebar && sidebarOverlay) {
         sidebarToggle.addEventListener('click', () => {
-          isMobileMenuOpen = !isMobileMenuOpen;
-
-          if (isMobileMenuOpen) {
-            sidebar.classList.remove('-translate-x-full');
-            sidebarOverlay.classList.add('active');
-          } else {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.remove('active');
-          }
+          setMobileMenuOpen(!isMobileMenuOpen);
         });
 
         // 点击遮罩关闭移动端菜单
         sidebarOverlay.addEventListener('click', () => {
-          isMobileMenuOpen = false;
-          sidebar.classList.add('-translate-x-full');
-          sidebarOverlay.classList.remove('active');
+          setMobileMenuOpen(false, true);
+        });
+
+        sidebarClose?.addEventListener('click', () => {
+          setMobileMenuOpen(false, true);
+        });
+
+        sidebar.addEventListener('click', (event) => {
+          if (isMobileMenuOpen && event.target instanceof Element && event.target.closest('a[href]')) {
+            setMobileMenuOpen(false, true);
+          }
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (!isMobileMenuOpen) return;
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            setMobileMenuOpen(false, true);
+          } else if (event.key === 'Tab') {
+            const controls = Array.from(sidebar.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'))
+              .filter(element => element.getClientRects().length > 0);
+            const first = controls[0];
+            const last = controls[controls.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault();
+              last?.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault();
+              first?.focus();
+            }
+          }
         });
       }
 
@@ -192,22 +232,24 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
       function handleResize() {
         if (window.innerWidth >= 768 && sidebar && mainContent) {
           // 桌面端：关闭移动端菜单
-          isMobileMenuOpen = false;
+          setMobileMenuOpen(false);
           sidebar.classList.remove('-translate-x-full');
-          if (sidebarOverlay) {
-            sidebarOverlay.classList.remove('active');
-          }
+          sidebar.classList.toggle('sidebar-collapsed', isCollapsed);
+          sidebar.inert = isCollapsed;
+          mainContent.classList.toggle('md:ml-64', !isCollapsed);
+          mainContent.classList.toggle('md:ml-0', isCollapsed);
         } else if (window.innerWidth < 768 && sidebar && mainContent) {
-          // 移动端：重置桌面端收放状态
+          // 桌面端收放状态保留，移动端只使用抽屉状态。
           sidebar.classList.remove('sidebar-collapsed');
+          sidebar.classList.toggle('-translate-x-full', !isMobileMenuOpen);
+          sidebar.inert = !isMobileMenuOpen;
           mainContent.classList.remove('md:ml-64');
           mainContent.classList.add('md:ml-0');
         }
       }
 
       window.addEventListener('resize', handleResize);
-      // 延迟执行初始化，确保DOM完全加载
-      setTimeout(handleResize, 100);
+      handleResize();
 
       // 页面卸载前保存状态
       window.addEventListener('beforeunload', () => {

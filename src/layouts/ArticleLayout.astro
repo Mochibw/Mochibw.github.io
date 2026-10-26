@@ -22,13 +22,13 @@ const formatDate = (date: Date) => {
 ---
 
 <Layout title={title}>
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <article class="prose prose-lg max-w-none">
-      <header class="mb-12">
-        <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-6">{title}</h1>
+  <div class="reading-container">
+    <article>
+      <header class="mb-10">
+        <h1 class="text-3xl sm:text-4xl font-bold text-slate-800 leading-tight mb-5">{title}</h1>
 
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <time class="text-slate-500" datetime={pubDate.toISOString()}>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <time class="text-sm text-slate-500" datetime={pubDate.toISOString()}>
             {formatDate(pubDate)}
           </time>
 
@@ -42,13 +42,13 @@ const formatDate = (date: Date) => {
         </div>
 
         {description && (
-          <p class="text-xl text-slate-600 leading-relaxed italic border-l-4 border-[var(--color-primary)] pl-4">
+          <p class="article-summary">
             {description}
           </p>
         )}
       </header>
 
-      <div class="prose-content">
+      <div class="article-body">
         <slot />
       </div>
 

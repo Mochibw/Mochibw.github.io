@@ -1,15 +1,27 @@
 ---
 // Header.astro
 ---
-<header class="sticky top-0 z-50 bg-white border-b border-gray-200">
+<header class="sticky top-0 z-40 bg-white border-b border-gray-200">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <nav class="flex justify-between items-center h-16">
+    <nav class="flex justify-between items-center h-16" aria-label="顶部导航">
       <div class="flex-shrink-0">
         <a href="/" class="text-xl font-bold text-slate-800 hover:text-[var(--color-primary)] transition-colors duration-200">
           Linatur
         </a>
       </div>
-      <div class="flex space-x-8">
+      <button
+        id="sidebar-toggle"
+        type="button"
+        class="grid h-11 w-11 place-items-center rounded-lg border border-gray-200 text-slate-700 hover:bg-gray-50 transition-colors md:hidden"
+        aria-label="打开导航菜单"
+        aria-controls="sidebar"
+        aria-expanded="false"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <div class="hidden md:flex space-x-8">
         <a
           href="/"
           class="text-slate-600 hover:text-[var(--color-primary)] transition-colors duration-200 font-medium"
