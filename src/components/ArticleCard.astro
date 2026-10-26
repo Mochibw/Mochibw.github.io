@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import TagPill from './TagPill.astro';
+import { articleUrl, formatDate } from '../lib/content';
 
 interface Props {
   entry: CollectionEntry<'thoughts' | 'learning'>;
@@ -10,13 +11,6 @@ interface Props {
 const { entry, headingLevel = 'h2' } = Astro.props;
 const Heading = headingLevel;
 
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(date);
-};
 ---
 
 <article class="article-entry grid min-w-0 gap-2 py-6 first:pt-0 last:pb-0 sm:grid-cols-[7.5rem_minmax(0,1fr)] sm:gap-6">
@@ -26,7 +20,7 @@ const formatDate = (date: Date) => {
   <div class="min-w-0 [overflow-wrap:anywhere]">
     <Heading class="text-xl font-semibold text-slate-800 leading-snug">
       <a
-        href={`/${entry.collection}/${entry.slug}/`}
+        href={articleUrl(entry)}
         class="hover:text-[var(--color-text-link)] hover:underline underline-offset-4 transition-colors duration-200"
       >
         {entry.data.title}

@@ -2,6 +2,8 @@
 import Layout from './Layout.astro';
 import TagPill from '../components/TagPill.astro';
 import GiscusComments from '../components/GiscusComments.astro';
+import { pageTitle, siteConfig } from '../config/site';
+import { formatDate } from '../lib/content';
 
 interface Props {
   title: string;
@@ -12,16 +14,9 @@ interface Props {
 
 const { title, pubDate, tags = [], description } = Astro.props;
 
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(date);
-};
 ---
 
-<Layout title={title}>
+<Layout title={pageTitle(title)} description={description}>
   <div class="reading-container">
     <article>
       <header class="mb-10">
@@ -52,7 +47,7 @@ const formatDate = (date: Date) => {
         <slot />
       </div>
 
-      <GiscusComments />
+      {siteConfig.comments.enabled && <GiscusComments />}
     </article>
   </div>
 </Layout>

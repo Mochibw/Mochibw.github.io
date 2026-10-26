@@ -1,26 +1,18 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
 import type { CollectionEntry } from 'astro:content';
+import { pageTitle } from '../../config/site';
+import { groupArticlesByTag, sortArticles } from '../../lib/content';
 
 export async function getStaticPaths() {
   const posts = [...await getCollection('thoughts'), ...await getCollection('learning')];
 
-  // 获取所有唯一的标签
-  const tagSet = new Set<string>();
-  posts.forEach(post => {
-    post.data.tags?.forEach(tag => tagSet.add(tag));
-  });
-
-  // 为每个标签生成路径
-  return Array.from(tagSet).map(tag => {
-    const filteredPosts = posts.filter(post => post.data.tags?.includes(tag));
-    return {
+  return Array.from(groupArticlesByTag(posts), ([tag, taggedPosts]) => ({
       params: { tag },
-      props: { posts: filteredPosts, tag }
-    };
-  });
+      props: { posts: taggedPosts, tag },
+  }));
 }
 
 type Props = {
@@ -31,10 +23,10 @@ type Props = {
 const { posts, tag } = Astro.props;
 
 // 按日期排序
-const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const sortedPosts = sortArticles(posts);
 ---
 
-<Layout title={`标签: ${tag} - Linatur 的知识库与思考花园`}>
+<Layout title={pageTitle(`标签: ${tag}`)}>
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <header class="mb-12">
       <div class="flex flex-wrap items-center gap-3 mb-6">

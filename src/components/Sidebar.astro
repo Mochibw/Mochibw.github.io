@@ -1,21 +1,15 @@
 ---
-const currentPath = Astro.url.pathname.replace(/\/?$/, '/');
-const isActive = (href: string) => href === '/' ? currentPath === '/' : currentPath.startsWith(href);
-const current = (href: string) => currentPath === href ? 'page' : isActive(href) ? 'location' : undefined;
-const navClass = (href: string) => [
-  'flex items-center space-x-3 py-2 px-3 rounded-lg transition-colors duration-200',
-  isActive(href)
-    ? 'bg-cyan-50 text-[var(--color-text-link)] font-medium'
-    : 'text-slate-600 hover:text-[var(--color-text-link)] hover:bg-gray-50',
-];
+import { siteConfig } from '../config/site';
+import SidebarNav from './SidebarNav.astro';
 ---
 
 <!-- 桌面端收放按钮 -->
 <button
   id="sidebar-collapse-btn"
-  class="hidden md:flex fixed top-20 bg-white border border-gray-200 rounded-full shadow-sm hover:bg-gray-50 hover:border-[var(--color-primary)] transition-all duration-300 items-center justify-center group"
+  class="hidden md:flex fixed top-20 bg-white border border-gray-200 rounded-full shadow-sm hover:bg-gray-50 hover:border-[var(--color-primary)] items-center justify-center group"
   aria-label="收放侧边栏"
-  style="width: 2.5rem; height: 2.5rem; left: 244px; z-index: 70;"
+  aria-controls="sidebar"
+  aria-expanded="true"
 >
   <svg id="collapse-icon" class="w-5 h-5 text-gray-700 group-hover:text-[var(--color-primary)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
@@ -25,7 +19,7 @@ const navClass = (href: string) => [
 <!-- 移动端遮罩 -->
 <div id="sidebar-overlay" class="sidebar-overlay md:hidden" aria-hidden="true"></div>
 
-<aside id="sidebar" class="w-64 bg-white border-r border-gray-200 h-screen p-4 fixed left-0 top-0 overflow-y-auto z-60 transform transition-transform duration-300 ease-in-out md:translate-x-0 -translate-x-full scrollbar-hide" aria-label="个人信息与站内导航" tabindex="-1">
+<aside id="sidebar" class="bg-white border-r border-gray-200 h-screen p-4 fixed left-0 top-0 overflow-y-auto z-60 scrollbar-hide" aria-label="个人信息与站内导航" tabindex="-1">
   <button
     id="sidebar-close"
     type="button"
@@ -40,18 +34,18 @@ const navClass = (href: string) => [
   <div class="text-center mb-4">
     <div class="relative w-28 h-28 mx-auto mt-2 mb-4">
       <img
-        src="/image/portrait.jpg"
+        src={siteConfig.portrait}
         alt="个人头像"
         class="w-full h-full rounded-full border-4 border-[var(--color-primary)] object-cover shadow-lg"
       />
     </div>
-    <h3 class="text-lg font-bold text-slate-800 mb-1">Linatur</h3>
+    <h3 class="text-lg font-bold text-slate-800 mb-1">{siteConfig.name}</h3>
   </div>
 
   <!-- 个人介绍 -->
   <div class="mb-6">
     <p class="text-xs text-slate-600 leading-relaxed">
-      热爱生活，喜欢思考。在这里分享我的想法和学习笔记，记录成长路上的点点滴滴。
+      {siteConfig.sidebarDescription}
     </p>
   </div>
 
@@ -61,7 +55,7 @@ const navClass = (href: string) => [
 
     <!-- GitHub -->
     <a
-      href="https://github.com/Mochibw"
+      href={siteConfig.social.github}
       target="_blank"
       rel="noopener noreferrer"
       class="flex items-center space-x-3 text-slate-600 hover:text-[var(--color-text-link)] transition-colors duration-200 group"
@@ -74,7 +68,7 @@ const navClass = (href: string) => [
 
     <!-- Email -->
     <a
-      href="mailto:hubowu233@gmail.com"
+      href={`mailto:${siteConfig.social.email}`}
       class="flex items-center space-x-3 text-slate-600 hover:text-[var(--color-text-link)] transition-colors duration-200 group"
     >
       <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +79,7 @@ const navClass = (href: string) => [
 
     <!-- Bilibili -->
     <a
-      href="https://space.bilibili.com/"
+      href={siteConfig.social.bilibili}
       target="_blank"
       rel="noopener noreferrer"
       class="flex items-center space-x-3 text-slate-600 hover:text-[var(--color-text-link)] transition-colors duration-200 group"
@@ -93,7 +87,7 @@ const navClass = (href: string) => [
       <svg class="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
         <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373Z"/>
       </svg>
-      <span class="text-sm">Bilibili: 寻易寒</span>
+      <span class="text-sm">{siteConfig.social.bilibiliLabel}</span>
     </a>
   </div>
 
@@ -101,47 +95,5 @@ const navClass = (href: string) => [
   <div class="border-t border-gray-200 my-6"></div>
 
   <!-- 导航菜单 -->
-  <nav class="space-y-2" aria-label="主要导航">
-    <h4 class="text-sm font-semibold text-slate-700 mb-3">导航</h4>
-    <a
-      href="/"
-      class:list={navClass('/')}
-      aria-current={current('/')}
-    >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-      </svg>
-      <span class="text-sm">首页</span>
-    </a>
-    <a
-      href="/thoughts/"
-      class:list={navClass('/thoughts/')}
-      aria-current={current('/thoughts/')}
-    >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-      </svg>
-      <span class="text-sm">想法</span>
-    </a>
-    <a
-      href="/learning/"
-      class:list={navClass('/learning/')}
-      aria-current={current('/learning/')}
-    >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-      </svg>
-      <span class="text-sm">学习</span>
-    </a>
-    <a
-      href="/about/"
-      class:list={navClass('/about/')}
-      aria-current={current('/about/')}
-    >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-      </svg>
-      <span class="text-sm">关于我</span>
-    </a>
-  </nav>
+  <SidebarNav />
 </aside>

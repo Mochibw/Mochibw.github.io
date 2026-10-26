@@ -2,29 +2,26 @@
 import Layout from '../layouts/Layout.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import { getCollection } from 'astro:content';
+import { siteConfig } from '../config/site';
+import { sortArticles } from '../lib/content';
 
 // 获取最新的想法和学习笔记
 const thoughts = await getCollection('thoughts');
 const learning = await getCollection('learning');
 
 // 按日期排序并取最新的3篇
-const latestThoughts = thoughts
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
-
-const latestLearning = learning
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+const latestThoughts = sortArticles(thoughts).slice(0, 3);
+const latestLearning = sortArticles(learning).slice(0, 3);
 ---
 
-<Layout title="Linatur 的知识库与思考花园">
+<Layout>
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
     <section class="mb-12">
       <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
-        Linatur 的思考花园
+        {siteConfig.homeTitle}
       </h1>
       <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
-        在这里记录对生活的思考、读书的感悟，以及学习路上的点滴。
+        {siteConfig.homeDescription}
       </p>
     </section>
 

@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { articleSections, pageTitle, type ArticleSection } from '../../config/site';
+import { sortArticles } from '../../lib/content';
+
+export function getStaticPaths() {
+  return Object.keys(articleSections).map(collection => ({
+    params: { collection },
+    props: { collection },
+  }));
+}
+
+interface Props { collection: ArticleSection }
+const { collection } = Astro.props;
+const section = articleSections[collection];
+const posts = sortArticles(await getCollection(collection));
+---
+
+<Layout title={pageTitle(section.label)}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <header class="mb-12">
+      <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">{section.label}</h1>
+      <p class="text-xl text-slate-600 leading-relaxed">{section.description}</p>
+    </header>
+
+    <div>
+      {posts.length > 0 ? (
+        <div class="divide-y divide-slate-200/80">
+          {posts.map(entry => <ArticleCard entry={entry} />)}
+        </div>
+      ) : (
+        <div class="text-center py-16 text-slate-500">
+          <p class="text-lg mb-4">{section.emptyMessage}</p>
+          <p class="text-base">敬请期待...</p>
+        </div>
+      )}
+    </div>
+  </div>
+</Layout>

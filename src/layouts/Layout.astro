@@ -2,6 +2,7 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Sidebar from '../components/Sidebar.astro';
+import { siteConfig } from '../config/site';
 import '../styles/global.css';
 
 interface Props {
@@ -9,47 +10,33 @@ interface Props {
   description?: string;
 }
 
-const { title = 'Linatur 的知识库与思考花园', description = '简约、清新、精致的个人网站，分享想法与学习笔记' } = Astro.props;
+const { title = siteConfig.title, description = siteConfig.description } = Astro.props;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
 ---
 
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-sidebar-collapsed="false" data-mobile-menu-open="false" data-sidebar-initializing>
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {canonical && <link rel="canonical" href={canonical} />}
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <script is:inline>
-      // 在页面渲染前设置初始状态类，避免闪烁
+      // Restore desktop preference before paint; navigation also works when storage is blocked.
       (function() {
-        const savedState = localStorage.getItem('sidebarCollapsed');
-        if (savedState === 'true') {
-          document.documentElement.classList.add('sidebar-initial-collapsed');
-        }
+        try {
+          document.documentElement.dataset.sidebarCollapsed = String(localStorage.getItem('sidebarCollapsed') === 'true');
+        } catch { /* Keep the expanded default. */ }
       })();
     </script>
-    <style is:global>
-      /* 页面加载时的临时禁用过渡动画的类 */
-      .initial-load-no-transition {
-        transition: none !important;
-      }
-      /* 初始收起状态样式 */
-      @media (min-width: 768px) {
-        .sidebar-initial-collapsed #sidebar {
-          transform: translateX(-200px) !important;
-        }
-        .sidebar-initial-collapsed #main-content {
-          margin-left: 0 !important;
-        }
-      }
-    </style>
   </head>
   <body class="bg-gray-50 min-h-screen flex flex-col">
     <Sidebar />
 
-    <div id="main-content" class="ml-0 md:ml-64 min-w-0 transition-all duration-300 ease-in-out flex flex-col min-h-screen">
+    <div id="main-content" class="min-w-0 flex flex-col min-h-screen">
       <Header />
 
       <main class="flex-1 overflow-y-auto pb-8">
@@ -62,225 +49,7 @@ const { title = 'Linatur 的知识库与思考花园', description = '简约、�
     </div>
 
     <script>
-      // 侧边栏控制逻辑
-      let isCollapsed = false;
-      let isMobileMenuOpen = false;
-
-      const sidebar = document.getElementById('sidebar');
-      const sidebarToggle = document.getElementById('sidebar-toggle');
-      const sidebarClose = document.getElementById('sidebar-close');
-      const sidebarCollapseBtn = document.getElementById('sidebar-collapse-btn');
-      const sidebarOverlay = document.getElementById('sidebar-overlay');
-      const mainContent = document.getElementById('main-content');
-      const collapseIcon = document.getElementById('collapse-icon');
-
-      // 更新按钮位置
-      function updateButtonPosition() {
-        if (sidebarCollapseBtn) {
-          if (isCollapsed) {
-            sidebarCollapseBtn.style.left = '1rem';
-          } else {
-            sidebarCollapseBtn.style.left = '244px';
-          }
-        }
-      }
-
-      // 从 localStorage 读取侧边栏状态并立即应用（避免初始加载时的动画）
-      function loadSidebarState() {
-        const savedState = localStorage.getItem('sidebarCollapsed');
-
-        // 只在初始加载时禁用过渡动画
-        sidebar?.classList.add('initial-load-no-transition');
-        mainContent?.classList.add('initial-load-no-transition');
-
-        if (savedState === 'true' && sidebar && mainContent && collapseIcon) {
-          // 收起状态
-          isCollapsed = true;
-          sidebar.classList.add('sidebar-collapsed');
-          mainContent.classList.remove('md:ml-64');
-          mainContent.classList.add('md:ml-0');
-          collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>';
-        } else {
-          // 展开状态
-          isCollapsed = false;
-          sidebar.classList.remove('sidebar-collapsed');
-          mainContent.classList.remove('md:ml-0');
-          mainContent.classList.add('md:ml-64');
-          if (collapseIcon) {
-            collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>';
-          }
-        }
-
-        // 更新按钮位置
-        updateButtonPosition();
-
-        // 恢复侧边栏滚动位置
-        const savedScrollPos = sessionStorage.getItem('sidebarScrollPos');
-        if (savedScrollPos && sidebar) {
-          sidebar.scrollTop = parseInt(savedScrollPos);
-        }
-
-        // 100ms后移除临时类，恢复过渡动画
-        setTimeout(() => {
-          sidebar?.classList.remove('initial-load-no-transition');
-          mainContent?.classList.remove('initial-load-no-transition');
-          // 移除初始状态类，避免影响后续的动态切换
-          document.documentElement.classList.remove('sidebar-initial-collapsed');
-        }, 100);
-      }
-
-      // 页面加载时应用保存的状态
-      loadSidebarState();
-
-      // 保存侧边栏滚动位置
-      if (sidebar) {
-        sidebar.addEventListener('scroll', () => {
-          sessionStorage.setItem('sidebarScrollPos', sidebar.scrollTop.toString());
-        });
-      }
-
-      // 桌面端收放功能
-      if (sidebarCollapseBtn && sidebar) {
-        sidebarCollapseBtn.addEventListener('click', () => {
-          isCollapsed = !isCollapsed;
-          sidebar.inert = isCollapsed;
-
-          // 保存状态到 localStorage
-          localStorage.setItem('sidebarCollapsed', isCollapsed.toString());
-
-          if (isCollapsed) {
-            sidebar.classList.add('sidebar-collapsed');
-            mainContent.classList.remove('md:ml-64');
-            mainContent.classList.add('md:ml-0');
-            if (collapseIcon) {
-              collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>';
-            }
-          } else {
-            sidebar.classList.remove('sidebar-collapsed');
-            mainContent.classList.remove('md:ml-0');
-            mainContent.classList.add('md:ml-64');
-            if (collapseIcon) {
-              collapseIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>';
-            }
-          }
-
-          // 更新按钮位置
-          updateButtonPosition();
-        });
-      }
-
-      // 移动端菜单切换
-      function setMobileMenuOpen(open: boolean, restoreFocus = false) {
-        if (!sidebar || !mainContent) return;
-        isMobileMenuOpen = open;
-        sidebar.classList.toggle('-translate-x-full', !open);
-        sidebarOverlay?.classList.toggle('active', open);
-        sidebarToggle?.setAttribute('aria-expanded', String(open));
-        document.body.classList.toggle('mobile-menu-open', open);
-        mainContent.inert = open;
-        sidebar.inert = window.innerWidth < 768 && !open;
-
-        if (open) {
-          (sidebarClose || sidebar).focus({ preventScroll: true });
-        } else if (restoreFocus) {
-          sidebarToggle?.focus({ preventScroll: true });
-        }
-      }
-
-      if (sidebarToggle && sidebar && sidebarOverlay) {
-        sidebarToggle.addEventListener('click', () => {
-          setMobileMenuOpen(!isMobileMenuOpen);
-        });
-
-        // 点击遮罩关闭移动端菜单
-        sidebarOverlay.addEventListener('click', () => {
-          setMobileMenuOpen(false, true);
-        });
-
-        sidebarClose?.addEventListener('click', () => {
-          setMobileMenuOpen(false, true);
-        });
-
-        sidebar.addEventListener('click', (event) => {
-          if (isMobileMenuOpen && event.target instanceof Element && event.target.closest('a[href]')) {
-            setMobileMenuOpen(false, true);
-          }
-        });
-
-        document.addEventListener('keydown', (event) => {
-          if (!isMobileMenuOpen) return;
-          if (event.key === 'Escape') {
-            event.preventDefault();
-            setMobileMenuOpen(false, true);
-          } else if (event.key === 'Tab') {
-            const controls = Array.from(sidebar.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'))
-              .filter(element => element.getClientRects().length > 0);
-            const first = controls[0];
-            const last = controls[controls.length - 1];
-            if (event.shiftKey && document.activeElement === first) {
-              event.preventDefault();
-              last?.focus();
-            } else if (!event.shiftKey && document.activeElement === last) {
-              event.preventDefault();
-              first?.focus();
-            }
-          }
-        });
-      }
-
-      // 响应式处理
-      function handleResize() {
-        if (window.innerWidth >= 768 && sidebar && mainContent) {
-          // 桌面端：关闭移动端菜单
-          setMobileMenuOpen(false);
-          sidebar.classList.remove('-translate-x-full');
-          sidebar.classList.toggle('sidebar-collapsed', isCollapsed);
-          sidebar.inert = isCollapsed;
-          mainContent.classList.toggle('md:ml-64', !isCollapsed);
-          mainContent.classList.toggle('md:ml-0', isCollapsed);
-        } else if (window.innerWidth < 768 && sidebar && mainContent) {
-          // 桌面端收放状态保留，移动端只使用抽屉状态。
-          sidebar.classList.remove('sidebar-collapsed');
-          sidebar.classList.toggle('-translate-x-full', !isMobileMenuOpen);
-          sidebar.inert = !isMobileMenuOpen;
-          mainContent.classList.remove('md:ml-64');
-          mainContent.classList.add('md:ml-0');
-        }
-      }
-
-      window.addEventListener('resize', handleResize);
-      handleResize();
-
-      // 页面卸载前保存状态
-      window.addEventListener('beforeunload', () => {
-        if (sidebar) {
-          sessionStorage.setItem('sidebarScrollPos', sidebar.scrollTop.toString());
-        }
-      });
-
-      // 阻止点击当前页面链接导致的页面重载和闪烁
-      function preventCurrentPageReload() {
-        const currentPath = window.location.pathname;
-        const links = document.querySelectorAll('a[href]');
-
-        links.forEach(link => {
-          const href = link.getAttribute('href');
-          if (href) {
-            // 获取链接的完整路径
-            const linkPath = new URL(href, window.location.origin).pathname;
-
-            // 如果链接指向当前页面，阻止默认行为
-            if (linkPath === currentPath) {
-              link.addEventListener('click', (e) => {
-                e.preventDefault();
-              });
-            }
-          }
-        });
-      }
-
-      // 页面加载完成后执行
-      preventCurrentPageReload();
+      import '../scripts/sidebar';
     </script>
   </body>
 </html>

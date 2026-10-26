@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./theme.css";
 @import "./article.css";
+@import "./sidebar.css";
 
 /* Only shared defaults belong here. Markdown formatting lives in article.css. */
 @layer base {
@@ -43,42 +44,6 @@
     }
 }
 
-/* 侧边栏收起状态 */
-.sidebar-collapsed {
-    transform: translateX(-256px) !important;
-}
-
-@media (min-width: 768px) {
-    .sidebar-collapsed {
-        transform: translateX(-200px) !important;
-    }
-}
-
-/* 移动端侧边栏遮罩 */
-.sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 45;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-}
-
-.sidebar-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-@media (max-width: 767px) {
-    body.mobile-menu-open {
-        overflow: hidden;
-    }
-}
-
 /* 隐藏滚动条样式 */
 .scrollbar-hide {
     -ms-overflow-style: none; /* Internet Explorer 10+ */
@@ -103,7 +68,7 @@
         animation: none;
     }
 
-    #sidebar, #main-content, #sidebar-collapse-btn, .sidebar-overlay {
+    #sidebar, #main-content, #sidebar-collapse-btn, #collapse-icon, .sidebar-overlay {
         transition: none !important;
     }
 }

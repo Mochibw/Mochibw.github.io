@@ -1,11 +1,13 @@
 ---
+import { tagUrl } from '../lib/content';
+
 interface Props {
   tag: string;
   href?: string;
 }
 
 const { tag, href } = Astro.props;
-const tagHref = href || `/tags/${tag}/`;
+const tagHref = href ?? tagUrl(tag);
 ---
 
 <a

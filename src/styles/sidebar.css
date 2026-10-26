@@ -1,0 +1,84 @@
+/* One state on <html> drives the sidebar, content offset, overlay and controls. */
+:root {
+    --sidebar-width: 16rem;
+    --sidebar-peek: 3.5rem;
+    --sidebar-duration: 300ms;
+}
+
+#sidebar {
+    width: var(--sidebar-width);
+    transform: translateX(-100%);
+    transition: transform var(--sidebar-duration) ease-in-out;
+}
+
+#main-content {
+    margin-left: 0;
+    transition: margin-left var(--sidebar-duration) ease-in-out;
+}
+
+#sidebar-collapse-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    left: calc(var(--sidebar-width) - 0.75rem);
+    z-index: 70;
+    transition: left var(--sidebar-duration) ease-in-out, background-color 200ms, border-color 200ms;
+}
+
+#collapse-icon {
+    transition: transform var(--sidebar-duration) ease-in-out;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 45;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--sidebar-duration) ease-in-out, visibility var(--sidebar-duration) ease-in-out;
+}
+
+@media (max-width: 767px) {
+    html[data-mobile-menu-open="true"] #sidebar {
+        transform: translateX(0);
+    }
+
+    html[data-mobile-menu-open="true"] .sidebar-overlay {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    html[data-mobile-menu-open="true"] body {
+        overflow: hidden;
+    }
+}
+
+@media (min-width: 768px) {
+    #sidebar {
+        transform: translateX(0);
+    }
+
+    #main-content {
+        margin-left: var(--sidebar-width);
+    }
+
+    html[data-sidebar-collapsed="true"] #sidebar {
+        transform: translateX(calc(var(--sidebar-peek) - var(--sidebar-width)));
+    }
+
+    html[data-sidebar-collapsed="true"] #main-content {
+        margin-left: 0;
+    }
+
+    html[data-sidebar-collapsed="true"] #sidebar-collapse-btn {
+        left: 1rem;
+    }
+
+    html[data-sidebar-collapsed="true"] #collapse-icon {
+        transform: rotate(180deg);
+    }
+}
+
+html[data-sidebar-initializing] :is(#sidebar, #main-content, #sidebar-collapse-btn, #collapse-icon) {
+    transition: none !important;
+}

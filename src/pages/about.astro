@@ -1,8 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { pageTitle, siteConfig } from '../config/site';
 ---
 
-<Layout title="关于我 - Linatur 的知识库与思考花园">
+<Layout title={pageTitle('关于我')}>
   <div class="reading-container">
     <header class="mb-10">
       <h1 class="text-3xl sm:text-4xl font-bold text-slate-800 leading-tight">关于我</h1>
@@ -10,7 +11,7 @@ import Layout from '../layouts/Layout.astro';
 
     <div class="article-body">
       <section class="mb-12">
-        <h2>你好，我是 Linatur</h2>
+        <h2>你好，我是 {siteConfig.name}</h2>
         <p>
           一个热爱思考、喜欢阅读的普通人。在这个快节奏的世界里，我试图通过文字来记录自己的想法，整理学习的心得，寻找内心的平静。
         </p>

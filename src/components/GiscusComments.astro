@@ -1,10 +1,10 @@
 ---
-// Giscus 评论组件
-// 使用 GitHub Discussions 作为评论系统
+import { siteConfig } from '../config/site';
+const { comments } = siteConfig;
 ---
 
-<div id="comments" class="giscus-container mt-12" style="background: transparent;">
-  <!-- 方案 1.3 改：叶子装饰符 - 自然、优雅的视觉语言 -->
+<div id="comments" class="giscus-container mt-12">
+  <!-- 文章与评论之间的叶片分隔符 -->
   <div class="relative flex items-center my-12">
     <div class="flex-grow border-t border-slate-200"></div>
     <div class="mx-4 text-slate-400 flex items-center">
@@ -24,18 +24,18 @@
   </div>
 
   <!-- Giscus 评论组件 -->
-  <script src="https://giscus.app/client.js"
-          data-repo="Mochibw/Mochibw.github.io"
-          data-repo-id="R_kgDOP6Tspw"
-          data-category="Comments"
-          data-category-id="DIC_kwDOP6Tsp84CwdWV"
+  <script is:inline src="https://giscus.app/client.js"
+          data-repo={comments.repo}
+          data-repo-id={comments.repoId}
+          data-category={comments.category}
+          data-category-id={comments.categoryId}
           data-mapping="pathname"
           data-strict="0"
           data-reactions-enabled="1"
           data-emit-metadata="0"
           data-input-position="top"
-          data-theme="preferred_color_scheme"
-          data-lang="zh-CN"
+          data-theme={comments.theme}
+          data-lang={comments.language}
           data-loading="lazy"
           crossorigin="anonymous"
           async>
@@ -83,28 +83,4 @@
     background: transparent !important;
   }
 
-  /* 移除可能存在的分割线或边框 */
-  :global(.giscus .giscus-header),
-  :global(.giscus .giscus-comments) {
-    border: none !important;
-    background: transparent !important;
-  }
-
-  /* 加载动画 */
-  .giscus-container:has(script[loading="lazy"])::after {
-    content: "";
-    display: block;
-    width: 32px;
-    height: 32px;
-    border: 3px solid var(--color-neutral-100);
-    border-top: 3px solid var(--color-primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 20px auto;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
 </style>
